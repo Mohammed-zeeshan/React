@@ -1,27 +1,41 @@
-import Modal from '../UI/Modal'
-import classes from './Cart.module.css'
+import React, { useState } from "react";
+import CandyForm from "./Components/CandyForm";
+import Lists from "./Components/Lists";
+import Cart from "./Components/Cart";
+import CartProvider from "./Components/CartProvider";
 
-const Cart = (props) => {
-    const cartItems = (
-        <ul className={classes['cart-item']}>
-            {[{id: 'c1', name: 'Sushi', amount: 2,price: 12.99}].map((item) => (
-                <p>{item.name}</p>
-            ))}
-        </ul>
-    )
-  return (
-    <Modal>
-        {cartItems}
-        <div className={classes.total}>
-            <span>Total Amount</span>
-            <span>35.62</span>
-        </div>
-        <div className={classes.actions}>
-            <button className={classes['button--alt']} onClick={props.onHideCart}>Close</button>
-            <button className={classes.button}>Order</button>
-        </div>
-    </Modal>
+function App() {
+  const [item, setItem] = useState([])
+  const [cartIsShown, setCartIsShown] = useState(false);
+  const addItemHandler = (names) => {
+    setItem(prevItem => {
+      const updatedItems = [...prevItem]
+      updatedItems.unshift({candyName: names.candyName, description: names.description, price: names.price, id: Math.random().toString()})
+      return updatedItems;
+    })
+  }
+  const showCartHandler = () => {
+    setCartIsShown(true);
+  }
+
+  const hideCartHandler = () => {
+    setCartIsShown(false)
+  }
+  let context = (
+    <p></p>
   )
+  if (item.length > 0){
+    context = (
+      <Lists items={item}/>
+    )
+  }
+  return (
+    <CartProvider>
+      {cartIsShown && <Cart onHideCart={hideCartHandler} />}
+      <CandyForm details={addItemHandler} onShowCart={showCartHandler} />
+      {context}
+    </CartProvider>
+  );
 }
 
-export default Cart
+export default App;
